@@ -141,7 +141,13 @@ export default function PsychologyEnhanced() {
 
   // Sort entries by date (most recent first)
   const sortedEntries = [...entries].sort((a, b) => 
-    new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime()
+    {
+      const aDateParts = a.entryDate.split('-').map(Number);
+      const aDate = new Date(aDateParts[0], aDateParts[1] - 1, aDateParts[2]);
+      const bDateParts = b.entryDate.split('-').map(Number);
+      const bDate = new Date(bDateParts[0], bDateParts[1] - 1, bDateParts[2]);
+      return bDate.getTime() - aDate.getTime();
+    }
   );
 
   if (isLoading) {
