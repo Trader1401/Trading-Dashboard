@@ -13,7 +13,8 @@ export default function MonthlyPerformanceChart({ trades, strategies = [] }: Mon
   
   // Group trades by month and calculate monthly P&L
   const monthlyData = activeTrades.reduce((acc, trade) => {
-    const date = new Date(trade.tradeDate + 'T00:00:00');
+    const dateParts = trade.tradeDate.split('-').map(Number);
+    const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
     const monthLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
     

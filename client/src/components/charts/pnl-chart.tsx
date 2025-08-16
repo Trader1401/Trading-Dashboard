@@ -27,13 +27,23 @@ export default function PnLChart({ trades, strategies = [] }: PnLChartProps) {
 
   const chartData = Object.entries(dailyData)
     .map(([date, pnl]) => ({
-      date: new Date(date + 'T00:00:00').toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      date: (() => {
+        const dateParts = date.split('-').map(Number);
+        const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        return dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      })(),
       fullDate: date,
       pnl,
       profit: pnl > 0 ? pnl : 0,
       loss: pnl < 0 ? pnl : 0,
     }))
-    .sort((a, b) => new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime())
+    .sort((a, b) => {
+      const aDateParts = a.fullDate.split('-').map(Number);
+      const aDate = new Date(aDateParts[0], aDateParts[1] - 1, aDateParts[2]);
+      const bDateParts = b.fullDate.split('-').map(Number);
+      const bDate = new Date(bDateParts[0], bDateParts[1] - 1, bDateParts[2]);
+      return aDate.getTime() - bDate.getTime();
+    })
     .slice(-30); // Last 30 days
 
   const CustomTooltip = ({ active, payload, label }: any) => {

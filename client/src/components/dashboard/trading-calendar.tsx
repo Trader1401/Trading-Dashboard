@@ -38,8 +38,8 @@ export default function TradingCalendar() {
   const getTradeDataForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
     const dayTrades = trades.filter(trade => {
-      const tradeDate = trade.tradeDate;
-      return tradeDate === dateString;
+      // Compare dates as strings to avoid timezone issues
+      return trade.tradeDate === dateString;
     });
     const pnl = calculateTotalPnL(dayTrades);
     return { count: dayTrades.length, pnl, trades: dayTrades };

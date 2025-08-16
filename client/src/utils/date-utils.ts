@@ -9,7 +9,7 @@ export function formatDateForInput(date: string | Date): string {
         return date;
       }
       // Convert from other formats
-      const parsedDate = new Date(date + 'T00:00:00');
+      const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) {
         return new Date().toISOString().split('T')[0];
       }
@@ -33,7 +33,19 @@ export function formatDateForDisplay(date: string | Date): string {
   try {
     if (!date) return 'Invalid Date';
     
-    const dateObj = typeof date === 'string' ? new Date(date + 'T00:00:00') : date;
+    // Handle date string properly without timezone issues
+    let dateObj: Date;
+    if (typeof date === 'string') {
+      // If it's already in YYYY-MM-DD format, parse it as local date
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        const [year, month, day] = date.split('-').map(Number);
+        dateObj = new Date(year, month - 1, day); // month is 0-indexed
+      } else {
+        dateObj = new Date(date);
+      }
+    } else {
+      dateObj = date;
+    }
     
     if (isNaN(dateObj.getTime())) {
       return 'Invalid Date';
@@ -52,7 +64,17 @@ export function formatDateForDisplay(date: string | Date): string {
 export function isValidDate(date: string | Date): boolean {
   try {
     if (!date) return false;
-    const dateObj = typeof date === 'string' ? new Date(date + 'T00:00:00') : date;
+    let dateObj: Date;
+    if (typeof date === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        const [year, month, day] = date.split('-').map(Number);
+        dateObj = new Date(year, month - 1, day);
+      } else {
+        dateObj = new Date(date);
+      }
+    } else {
+      dateObj = date;
+    }
     return !isNaN(dateObj.getTime());
   } catch (error) {
     return false;
@@ -62,7 +84,14 @@ export function isValidDate(date: string | Date): boolean {
 export function parseDate(dateString: string): Date | null {
   try {
     if (!dateString) return null;
-    const date = new Date(dateString + 'T00:00:00');
+    // Parse date string as local date to avoid timezone issues
+    let date: Date;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(dateString);
+    }
     return isNaN(date.getTime()) ? null : date;
   } catch (error) {
     return null;

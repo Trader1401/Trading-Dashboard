@@ -189,9 +189,16 @@ export function formatPercentage(percentage: number): string {
 
 export function getTradesByDateRange(trades: Trade[], startDate: string, endDate: string): Trade[] {
   return trades.filter(trade => {
-    const tradeDate = new Date(trade.tradeDate + 'T00:00:00');
-    const start = new Date(startDate + 'T00:00:00');
-    const end = new Date(endDate + 'T00:00:00');
+    // Parse dates as local dates to avoid timezone issues
+    const tradeDateParts = trade.tradeDate.split('-').map(Number);
+    const tradeDate = new Date(tradeDateParts[0], tradeDateParts[1] - 1, tradeDateParts[2]);
+    
+    const startDateParts = startDate.split('-').map(Number);
+    const start = new Date(startDateParts[0], startDateParts[1] - 1, startDateParts[2]);
+    
+    const endDateParts = endDate.split('-').map(Number);
+    const end = new Date(endDateParts[0], endDateParts[1] - 1, endDateParts[2]);
+    
     return tradeDate >= start && tradeDate <= end;
   });
 }

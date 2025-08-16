@@ -25,8 +25,8 @@ export default function StatsCards() {
 
   const today = new Date().toISOString().split('T')[0];
   const todaysTrades = trades.filter(trade => {
-    const tradeDate = trade.tradeDate;
-    return tradeDate === today;
+    // Direct string comparison to avoid timezone issues
+    return trade.tradeDate === today;
   });
   const todaysPnL = calculateTotalPnL(todaysTrades);
 

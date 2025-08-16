@@ -14,14 +14,22 @@ export default function EquityCurve({ trades, strategies = [] }: EquityCurveProp
   
   // Sort trades by date and calculate cumulative P&L
   const sortedTrades = [...activeTrades].sort((a, b) => 
-    new Date(a.tradeDate + 'T00:00:00').getTime() - new Date(b.tradeDate + 'T00:00:00').getTime()
+    {
+      const aDateParts = a.tradeDate.split('-').map(Number);
+      const aDate = new Date(aDateParts[0], aDateParts[1] - 1, aDateParts[2]);
+      const bDateParts = b.tradeDate.split('-').map(Number);
+      const bDate = new Date(bDateParts[0], bDateParts[1] - 1, bDateParts[2]);
+      return aDate.getTime() - bDate.getTime();
+    }
   );
 
   let cumulativePnL = 0;
   const equityData = sortedTrades.map((trade, index) => {
     cumulativePnL += parseFloat(trade.profitLoss?.toString() || "0");
+    const dateParts = trade.tradeDate.split('-').map(Number);
+    const tradeDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     return {
-      date: new Date(trade.tradeDate + 'T00:00:00').toLocaleDateString("en-US", { 
+      date: tradeDate.toLocaleDateString("en-US", { 
         month: "short", 
         day: "numeric" 
       }),
