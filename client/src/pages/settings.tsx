@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ChecklistManagement from "@/components/checklist/checklist-management";
 import { useSettings } from "@/hooks/use-settings";
 import { useToast } from "@/hooks/use-toast";
 
@@ -217,177 +219,190 @@ export default function Settings() {
         <p className="text-gray-600">Configure your Google Sheets integration and app preferences</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Settings Form */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Google Sheets Integration</CardTitle>
-                <ConnectionStatusIndicator />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="googleSheetId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Google Sheet ID</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          The ID from your Google Sheet URL. Found between /d/ and /edit in the URL.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="googleScriptUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Google Apps Script URL</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="https://script.google.com/macros/s/your-script-id/exec"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          The deployment URL from your Google Apps Script project.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {testResult && (
-                    <Alert variant={connectionStatus === "error" ? "destructive" : "default"}>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{testResult}</AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button type="submit" className="flex-1">
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Settings
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={testConnection}
-                      disabled={connectionStatus === "testing"}
-                      className="flex-1"
-                    >
-                      {connectionStatus === "testing" ? (
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <RefreshCw className="w-4 h-4 mr-2" />
+      <Tabs defaultValue="integration" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="integration">Google Sheets Integration</TabsTrigger>
+          <TabsTrigger value="checklist">Trading Checklist</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="integration">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Settings Form */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Google Sheets Integration</CardTitle>
+                    <ConnectionStatusIndicator />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="googleSheetId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Google Sheet ID</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              The ID from your Google Sheet URL. Found between /d/ and /edit in the URL.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="googleScriptUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Google Apps Script URL</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="https://script.google.com/macros/s/your-script-id/exec"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              The deployment URL from your Google Apps Script project.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {testResult && (
+                        <Alert variant={connectionStatus === "error" ? "destructive" : "default"}>
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{testResult}</AlertDescription>
+                        </Alert>
                       )}
-                      Test Connection
+                      
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button type="submit" className="flex-1">
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Settings
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={testConnection}
+                          disabled={connectionStatus === "testing"}
+                          className="flex-1"
+                        >
+                          {connectionStatus === "testing" ? (
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                          )}
+                          Test Connection
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Setup Instructions */}
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Info className="w-5 h-5" />
+                    <span>Setup Instructions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">1. Create Google Sheet</h4>
+                    <p className="text-sm text-gray-600">
+                      Create a new Google Sheet and copy the Sheet ID from the URL.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">2. Setup Apps Script</h4>
+                    <p className="text-sm text-gray-600">
+                      Create a Google Apps Script project and deploy it as a web app.
+                    </p>
+                    <Button variant="link" size="sm" asChild className="p-0 h-auto">
+                      <a href="https://script.google.com" target="_blank" rel="noopener noreferrer">
+                        Open Apps Script <ExternalLink className="w-3 h-3 ml-1" />
+                      </a>
                     </Button>
                   </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">3. Configure Permissions</h4>
+                    <p className="text-sm text-gray-600">
+                      Grant necessary permissions for the script to access your sheet.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">4. Deploy & Test</h4>
+                    <p className="text-sm text-gray-600">
+                      Deploy the script and use the test connection button to verify.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
 
-        {/* Setup Instructions */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Info className="w-5 h-5" />
-                <span>Setup Instructions</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium text-sm mb-2">1. Create Google Sheet</h4>
-                <p className="text-sm text-gray-600">
-                  Create a new Google Sheet and copy the Sheet ID from the URL.
-                </p>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-sm mb-2">2. Setup Apps Script</h4>
-                <p className="text-sm text-gray-600">
-                  Create a Google Apps Script project and deploy it as a web app.
-                </p>
-                <Button variant="link" size="sm" asChild className="p-0 h-auto">
-                  <a href="https://script.google.com" target="_blank" rel="noopener noreferrer">
-                    Open Apps Script <ExternalLink className="w-3 h-3 ml-1" />
-                  </a>
-                </Button>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-sm mb-2">3. Configure Permissions</h4>
-                <p className="text-sm text-gray-600">
-                  Grant necessary permissions for the script to access your sheet.
-                </p>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-sm mb-2">4. Deploy & Test</h4>
-                <p className="text-sm text-gray-600">
-                  Deploy the script and use the test connection button to verify.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>App Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Version</span>
+                    <span className="text-sm font-medium">1.0.0</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Environment</span>
+                    <Badge variant="outline">
+                      {import.meta.env.DEV ? "Development" : "Production"}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Data Storage</span>
+                    <span className="text-sm font-medium">Google Sheets</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>App Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Version</span>
-                <span className="text-sm font-medium">1.0.0</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Environment</span>
-                <Badge variant="outline">
-                  {import.meta.env.DEV ? "Development" : "Production"}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Data Storage</span>
-                <span className="text-sm font-medium">Google Sheets</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Support</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-3">
-                Need help setting up your trading dashboard?
-              </p>
-              <Button variant="outline" size="sm" asChild>
-                <a href="#" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  View Documentation
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Support</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Need help setting up your trading dashboard?
+                  </p>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="#" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View Documentation
+                    </a>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="checklist">
+          <ChecklistManagement />
+        </TabsContent>
+      </Tabs>
     </motion.div>
   );
 }

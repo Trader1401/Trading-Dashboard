@@ -3,11 +3,13 @@ import { Trade } from "@shared/schema";
 import { GoogleSheetsAPI } from "@/lib/google-sheets";
 import { useAppContext } from "@/contexts/app-context";
 import { useToast } from "@/hooks/use-toast";
+import { useChecklist } from "@/hooks/use-checklist";
 
 export function useTrades() {
   const { settings } = useAppContext();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { parseTradeNotes } = useChecklist();
 
   const api = settings ? new GoogleSheetsAPI(settings.googleScriptUrl || "", settings.googleSheetId || "") : null;
 
@@ -15,7 +17,18 @@ export function useTrades() {
     queryKey: ["trades"],
     queryFn: async () => {
       if (!api) throw new Error("Google Sheets not configured");
-      return api.getTrades();
+      const trades = await api.getTrades();
+      
+      // Parse checklist data for each trade
+      return trades.map(trade => {
+        const parsed = parseTradeNotes(trade.notes);
+        return {
+          ...trade,
+          // Keep original notes for backend compatibility
+          // Frontend components will use parseTradeNotes to extract checklist/userNotes
+          _parsedNotes: parsed
+        };
+      });
     },
     enabled: !!api,
     staleTime: 1000 * 60 * 5, // 5 minutes

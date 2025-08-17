@@ -28,6 +28,8 @@ import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
+import { useChecklist, ChecklistAdherence } from "@/hooks/use-checklist";
+import TradeChecklist from "@/components/checklist/trade-checklist";
 import { calculatePnL, formatCurrency, formatPercentage, calculatePercentage } from "@/lib/calculations";
 import { formatDateForDisplay, formatDateForInput, isValidDate } from "@/utils/date-utils";
 
@@ -60,8 +62,11 @@ const emotions = ["Confident", "Neutral", "Anxious", "Excited", "Fearful", "Gree
 
 export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [checklist, setChecklist] = useState<ChecklistAdherence>({});
+  const [userNotes, setUserNotes] = useState("");
   const { updateTrade, deleteTrade, isUpdating, isDeleting } = useTrades();
   const { strategies } = useStrategies();
+  const { parseTradeNotes, serializeTradeNotes, calculateAdherenceScore, getAdherenceLevel } = useChecklist();
 
   const form = useForm<TradeForm>({
     resolver: zodResolver(tradeSchema),
@@ -82,11 +87,26 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
     },
   });
 
+  // Parse checklist data when trade changes
+  useEffect(() => {
+    if (trade?.notes) {
+      const parsed = parseTradeNotes(trade.notes);
+      setChecklist(parsed.checklist || {});
+      setUserNotes(parsed.userNotes || '');
+      // Update form with user notes only
+      form.setValue('notes', parsed.userNotes || '');
+    } else {
+      setChecklist({});
+      setUserNotes('');
+    }
+  }, [trade, form, parseTradeNotes]);
   const onSubmit = (data: TradeForm) => {
     const profitLoss = data.exitPrice 
       ? calculatePnL(data.entryPrice, data.exitPrice, data.quantity)
       : 0;
 
+    // Serialize checklist data with user notes
+    const serializedNotes = serializeTradeNotes(checklist, data.notes || '');
     const tradeData = {
       id: trade.id,
       tradeDate: data.tradeDate,
@@ -100,7 +120,7 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
       setupFollowed: data.setupFollowed,
       whichSetup: data.whichSetup || null,
       emotion: data.emotion || null,
-      notes: data.notes || null,
+      notes: serializedNotes,
       psychologyReflections: data.psychologyReflections || null,
       screenshotLink: data.screenshotLink || null,
     };
@@ -125,6 +145,11 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
     : 0;
 
   const isProfitable = pnl >= 0;
+  
+  // Parse checklist data for display
+  const parsedNotes = parseTradeNotes(trade.notes);
+  const adherenceScore = parsedNotes.checklist ? calculateAdherenceScore(parsedNotes.checklist) : 0;
+  const adherenceLevel = getAdherenceLevel(adherenceScore);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -435,6 +460,12 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                     )}
                   />
                   
+                  {/* Trading Checklist */}
+                  <TradeChecklist
+                    checklist={checklist}
+                    onChecklistChange={setChecklist}
+                  />
+                  
                   <FormField
                     control={form.control}
                     name="psychologyReflections"
@@ -534,6 +565,21 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                       </span>
                     </div>
                     
+                    {/* Checklist Adherence Display */}
+                    {parsedNotes.checklist && Object.keys(parsedNotes.checklist).length > 0 && (
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Checklist Adherence</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-900 dark:text-gray-100">
+                            {Object.values(parsedNotes.checklist).filter(Boolean).length}/{Object.keys(parsedNotes.checklist).length}
+                          </span>
+                          <Badge variant={adherenceScore >= 75 ? 'default' : adherenceScore >= 50 ? 'secondary' : 'destructive'}>
+                            {adherenceLevel}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</span>
                       <span className="text-gray-900 dark:text-gray-100">{trade.quantity} shares</span>
@@ -608,15 +654,15 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
               </div>
 
               {/* Notes and Reflections */}
-              {(trade.notes || trade.psychologyReflections) && (
+              {(parsedNotes.userNotes || trade.psychologyReflections) && (
                 <>
                   <Separator />
                   <div className="space-y-4">
-                    {trade.notes && (
+                    {parsedNotes.userNotes && (
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Trade Notes</h4>
                         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{trade.notes}</p>
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{parsedNotes.userNotes}</p>
                         </div>
                       </div>
                     )}

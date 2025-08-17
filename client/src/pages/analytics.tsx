@@ -16,8 +16,10 @@ import EmotionAnalysisChart from "@/components/charts/emotion-analysis-chart";
 import TradeFrequencyChart from "@/components/charts/trade-frequency-chart";
 import RiskRewardChart from "@/components/charts/risk-reward-chart";
 import PsychologyMoodTracker from "@/components/charts/psychology-mood-tracker";
+import ChecklistAdherenceChart from "@/components/charts/checklist-adherence-chart";
 import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
+import { useChecklist } from "@/hooks/use-checklist";
 import {
   calculateTotalPnL,
   calculateWinRate,
@@ -34,6 +36,7 @@ import {
 export default function Analytics() {
   const { trades, isLoading } = useTrades();
   const { strategies } = useStrategies();
+  const { checklistItems } = useChecklist();
   const [timeRange, setTimeRange] = useState("all");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -261,10 +264,13 @@ export default function Analytics() {
       {/* Enhanced Charts with Tabs */}
       <Tabs defaultValue="overview" className="mb-8">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="strategies">Strategies</TabsTrigger>
-          <TabsTrigger value="psychology">Psychology</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="strategies">Strategies</TabsTrigger>
+            <TabsTrigger value="psychology">Psychology</TabsTrigger>
+            <TabsTrigger value="discipline">Discipline</TabsTrigger>
+          </TabsList>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-8">
@@ -431,6 +437,27 @@ export default function Analytics() {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
+        </TabsContent>
+        
+        <TabsContent value="discipline" className="space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {checklistItems.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <div className="text-gray-500">
+                    <p className="text-lg mb-2">No checklist configured</p>
+                    <p className="text-sm">Go to Settings → Trading Checklist to create your discipline tracking checklist</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <ChecklistAdherenceChart trades={filteredTrades} strategies={strategies} />
+            )}
           </motion.div>
         </TabsContent>
       </Tabs>

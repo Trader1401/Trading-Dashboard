@@ -13,6 +13,7 @@ import TradeLogEnhanced from "@/pages/trade-log-enhanced";
 import Analytics from "@/pages/analytics";
 import Strategies from "@/pages/strategies";
 import PsychologyEnhanced from "@/pages/psychology-enhanced";
+import Discipline from "@/pages/discipline";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
@@ -26,6 +27,7 @@ function Router() {
         <Route path="/analytics" component={Analytics} />
         <Route path="/strategies" component={Strategies} />
         <Route path="/psychology" component={PsychologyEnhanced} />
+        <Route path="/discipline" component={Discipline} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>

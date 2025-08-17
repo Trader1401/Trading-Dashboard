@@ -17,8 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import TradeDetailModal from "@/components/trade/trade-detail-modal";
+import TradeChecklist from "@/components/checklist/trade-checklist";
 import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
+import { useChecklist, ChecklistAdherence } from "@/hooks/use-checklist";
 import { calculatePnL, formatCurrency, formatPercentage, calculatePercentage } from "@/lib/calculations";
 import { formatDateForDisplay, isValidDate } from "@/utils/date-utils";
 
@@ -60,12 +62,14 @@ export default function TradeLogEnhanced() {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [checklist, setChecklist] = useState<ChecklistAdherence>({});
   const [filters, setFilters] = useState<FilterForm>({
     profitLoss: "all"
   });
   
   const { trades, addTrade, isAdding, isLoading } = useTrades();
   const { strategies } = useStrategies();
+  const { serializeTradeNotes, parseTradeNotes } = useChecklist();
 
   const form = useForm<TradeForm>({
     resolver: zodResolver(tradeSchema),
@@ -112,6 +116,8 @@ export default function TradeLogEnhanced() {
       ? calculatePnL(data.entryPrice, data.exitPrice, data.quantity, data.tradeType)
       : 0;
 
+    // Serialize checklist data with user notes
+    const serializedNotes = serializeTradeNotes(checklist, data.notes || '');
     addTrade({
       tradeDate: data.tradeDate,
       stockName: data.stockName.toUpperCase(),
@@ -125,12 +131,13 @@ export default function TradeLogEnhanced() {
       setupFollowed: data.setupFollowed,
       whichSetup: data.whichSetup || null,
       emotion: data.emotion || null,
-      notes: data.notes || null,
+      notes: serializedNotes,
       psychologyReflections: data.psychologyReflections || null,
       screenshotLink: data.screenshotLink || null,
     });
 
     form.reset();
+    setChecklist({});
     setIsAddDialogOpen(false);
   };
 
@@ -176,7 +183,7 @@ export default function TradeLogEnhanced() {
     const headers = [
       "Trade Date", "Stock Name", "Quantity", "Entry Price", "Exit Price", 
       "Stop Loss", "Target Price", "P&L", "P&L %", "Setup Followed", 
-      "Strategy", "Emotion", "Notes", "Psychology Reflections", "Screenshot Link"
+      "Strategy", "Emotion", "Checklist Adherence", "Notes", "Psychology Reflections", "Screenshot Link"
     ];
 
     const csvData = filteredTrades.map(trade => {
@@ -184,6 +191,12 @@ export default function TradeLogEnhanced() {
       const exitPrice = parseFloat(trade.exitPrice || "0");
       const pnl = parseFloat(trade.profitLoss || "0");
       const pnlPercent = exitPrice > 0 ? calculatePercentage(entryPrice, exitPrice) : 0;
+      
+      // Parse checklist data for export
+      const parsedNotes = parseTradeNotes(trade.notes);
+      const checklistScore = parsedNotes.checklist 
+        ? Object.values(parsedNotes.checklist).filter(Boolean).length + '/' + Object.keys(parsedNotes.checklist).length
+        : 'N/A';
 
       return [
         trade.tradeDate,
@@ -198,7 +211,8 @@ export default function TradeLogEnhanced() {
         trade.setupFollowed ? "Yes" : "No",
         trade.whichSetup || "",
         trade.emotion || "",
-        (trade.notes || "").replace(/,/g, ";"),
+        checklistScore,
+        (parsedNotes.userNotes || "").replace(/,/g, ";"),
         (trade.psychologyReflections || "").replace(/,/g, ";"),
         trade.screenshotLink || ""
       ];
@@ -482,6 +496,12 @@ export default function TradeLogEnhanced() {
                         <FormMessage />
                       </FormItem>
                     )}
+                  />
+                  
+                  {/* Trading Checklist */}
+                  <TradeChecklist
+                    checklist={checklist}
+                    onChecklistChange={setChecklist}
                   />
                   
                   <FormField
@@ -812,8 +832,28 @@ export default function TradeLogEnhanced() {
                           </TableCell>
                           <TableCell className="max-w-[200px]">
                             {trade.notes ? (
-                              <div className="truncate" title={trade.notes}>
-                                {trade.notes}
+                              <div className="space-y-1">
+                                {(() => {
+                                  const parsed = parseTradeNotes(trade.notes);
+                                  const checklistScore = parsed.checklist 
+                                    ? Object.values(parsed.checklist).filter(Boolean).length + '/' + Object.keys(parsed.checklist).length
+                                    : null;
+                                  
+                                  return (
+                                    <>
+                                      {checklistScore && (
+                                        <Badge variant="outline" className="text-xs">
+                                          {checklistScore}
+                                        </Badge>
+                                      )}
+                                      {parsed.userNotes && (
+                                        <div className="truncate text-xs" title={parsed.userNotes}>
+                                          {parsed.userNotes}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+                                })()}
                               </div>
                             ) : "-"}
                           </TableCell>

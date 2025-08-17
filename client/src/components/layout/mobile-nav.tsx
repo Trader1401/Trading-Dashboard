@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, TrendingUp, BarChart3, Brain, Settings } from "lucide-react";
+import { Home, TrendingUp, BarChart3, Brain, CheckSquare, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
   { path: "/trades", label: "Trades", icon: TrendingUp },
   { path: "/analytics", label: "Analytics", icon: BarChart3 },
   { path: "/strategies", label: "Strategies", icon: Brain },
+  { path: "/discipline", label: "Discipline", icon: CheckSquare },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 

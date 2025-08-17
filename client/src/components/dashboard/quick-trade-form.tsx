@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
+import { useChecklist, ChecklistAdherence } from "@/hooks/use-checklist";
+import TradeChecklist from "@/components/checklist/trade-checklist";
 import { calculatePnL } from "@/lib/calculations";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +33,8 @@ type QuickTradeForm = z.infer<typeof quickTradeSchema>;
 export default function QuickTradeForm() {
   const { addTrade, isAdding } = useTrades();
   const { strategies } = useStrategies();
+  const [checklist, setChecklist] = useState<ChecklistAdherence>({});
+  const { serializeTradeNotes } = useChecklist();
   
   const form = useForm<QuickTradeForm>({
     resolver: zodResolver(quickTradeSchema),
@@ -48,6 +52,9 @@ export default function QuickTradeForm() {
   const onSubmit = (data: QuickTradeForm) => {
     const profitLoss = calculatePnL(data.entryPrice, data.exitPrice, data.quantity, data.tradeType);
     
+    // Serialize checklist data (no user notes in quick form)
+    const serializedNotes = serializeTradeNotes(checklist, '');
+    
     addTrade({
       tradeDate: new Date().toISOString().split('T')[0],
       stockName: data.stockName.toUpperCase(),
@@ -59,7 +66,7 @@ export default function QuickTradeForm() {
       setupFollowed: data.setupFollowed,
       whichSetup: data.whichSetup || null,
       emotion: null,
-      notes: null,
+      notes: serializedNotes,
       psychologyReflections: null,
       screenshotLink: null,
       stopLoss: null,
@@ -67,10 +74,12 @@ export default function QuickTradeForm() {
     });
     
     form.reset();
+    setChecklist({});
   };
 
   const clearForm = () => {
     form.reset();
+    setChecklist({});
   };
 
   return (
@@ -229,6 +238,12 @@ export default function QuickTradeForm() {
                 )}
               />
             </div>
+            
+            {/* Trading Checklist */}
+            <TradeChecklist
+              checklist={checklist}
+              onChecklistChange={setChecklist}
+            />
             
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button 
