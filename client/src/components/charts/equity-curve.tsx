@@ -35,9 +35,9 @@ export default function EquityCurve({ trades, strategies = [] }: EquityCurveProp
       const data = payload[0].payload;
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium">{label}</p>
-          <p className="text-sm">Trade #{data.tradeNumber}</p>
-          <p className="text-sm">
+          <p className="font-medium text-black">{label}</p>
+          <p className="text-black">Trade #{data.tradeNumber}</p>
+          <p className="text-black">
             Equity: <span className={data.equity >= 0 ? 'text-profit' : 'text-loss'}>
               {formatCurrency(data.equity)}
             </span>

@@ -50,11 +50,11 @@ export default function TradeFrequencyChart({ trades, strategies = [] }: TradeFr
       const data = payload[0].payload;
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium mb-2">Week of {label}</p>
+          <p className="font-medium mb-2 text-black">Week of {label}</p>
           <div className="space-y-1">
-            <p className="text-sm">Trades: {data.trades}</p>
-            <p className="text-sm">Volume: {formatCurrency(data.totalVolume)}</p>
-            <p className="text-sm">
+            <p className="text-black">Trades: {data.trades}</p>
+            <p className="text-black">Volume: {formatCurrency(data.totalVolume)}</p>
+            <p className="text-black">
               Avg P&L: <span className={data.avgPnL >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {formatCurrency(data.avgPnL)}
               </span>

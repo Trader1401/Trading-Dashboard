@@ -22,7 +22,7 @@ export default function StrategyBreakdownChart({ trades, strategies = [] }: Stra
   const strategyData = Object.entries(strategyGroups).map(([strategy, strategyTrades], index) => ({
     strategy: strategy === "No Strategy" ? "Unassigned" : strategy,
     trades: strategyTrades.length,
-    pnl: calculateTotalPnL(strategyTrades, strategies),
+    pnl: calculateTotalPnL(strategyTrades),
     color: COLORS[index % COLORS.length],
     percentage: (strategyTrades.length / trades.length) * 100,
   }));
@@ -32,10 +32,10 @@ export default function StrategyBreakdownChart({ trades, strategies = [] }: Stra
       const data = payload[0].payload;
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium">{data.strategy}</p>
+          <p className="font-medium text-black">{data.strategy}</p>
           <div className="space-y-1 mt-2">
-            <p className="text-sm">Trades: {data.trades} ({data.percentage.toFixed(1)}%)</p>
-            <p className="text-sm">
+            <p className="text-black">Trades: {data.trades} ({data.percentage.toFixed(1)}%)</p>
+            <p className="text-black">
               P&L: <span className={data.pnl >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {formatCurrency(data.pnl)}
               </span>
@@ -85,7 +85,7 @@ export default function StrategyBreakdownChart({ trades, strategies = [] }: Stra
               </div>
               
               <div className="ml-6 space-y-3 max-w-xs">
-                <h4 className="font-semibold text-gray-900">Strategy Legend</h4>
+                <h4 className="font-semibold text-white-300">Strategy Legend</h4>
                 {strategyData.map((item, index) => (
                   <div key={index} className="flex items-center justify-between space-x-3">
                     <div className="flex items-center space-x-2">

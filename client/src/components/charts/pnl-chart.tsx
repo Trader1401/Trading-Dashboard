@@ -41,8 +41,8 @@ export default function PnLChart({ trades, strategies = [] }: PnLChartProps) {
       const data = payload[0].payload;
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium">{label}</p>
-          <p className={`text-sm ${data.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
+          <p className="font-medium text-black">{label}</p>
+          <p className={`text-black ${data.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
             P&L: {formatCurrency(data.pnl)}
           </p>
         </div>

@@ -53,17 +53,17 @@ export default function MonthlyPerformanceChart({ trades, strategies = [] }: Mon
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium mb-2">{label}</p>
+        <div className="bg-white p-4 border border-black-200 rounded-lg shadow-lg">
+          <p className="font-medium mb-2 text-black">{label}</p>
           <div className="space-y-1">
-            <p className="text-sm">
+            <p className="text-black">
               P&L: <span className={data.pnl >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {formatCurrency(data.pnl)}
               </span>
             </p>
-            <p className="text-sm">Trades: {data.trades}</p>
-            <p className="text-sm">Win Rate: {data.winRate.toFixed(1)}%</p>
-            <p className="text-sm">Wins: {data.wins} | Losses: {data.losses}</p>
+            <p className="text-black">Trades: {data.trades}</p>
+            <p className="text-black">Win Rate: {data.winRate.toFixed(1)}%</p>
+            <p className="text-black">Wins: {data.wins} | Losses: {data.losses}</p>
           </div>
         </div>
       );

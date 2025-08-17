@@ -34,8 +34,8 @@ export default function WinRateChart({ trades, strategies = [] }: WinRateChartPr
       const percentage = ((data.value / activeTrades.length) * 100).toFixed(1);
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium">{data.name}</p>
-          <p className="text-sm">
+          <p className="font-medium text-black">{data.name}</p>
+          <p className="text-black">
             {data.value} trades ({percentage}%)
           </p>
         </div>

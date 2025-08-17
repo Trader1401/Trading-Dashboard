@@ -75,11 +75,11 @@ export default function PsychologyMoodTracker({ trades, strategies = [] }: Psych
       const data = payload[0].payload;
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium mb-2">{label}</p>
+          <p className="font-medium mb-2 text-black">{label}</p>
           <div className="space-y-1">
-            <p className="text-sm">Mood: {data.moodLabel} ({data.moodScore.toFixed(1)}/5)</p>
-            <p className="text-sm">Trades: {data.trades}</p>
-            <p className="text-sm">
+            <p className="text-black">Mood: {data.moodLabel} ({data.moodScore.toFixed(1)}/5)</p>
+            <p className="text-black">Trades: {data.trades}</p>
+            <p className="text-black">
               P&L: <span className={data.pnl >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {formatCurrency(data.pnl)}
               </span>

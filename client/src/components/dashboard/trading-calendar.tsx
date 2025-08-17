@@ -22,7 +22,7 @@ export default function TradingCalendar() {
   const days: Date[] = [];
   const currentDate = new Date(startDate);
   
-  for (let i = 0; i < 42; i++) {
+  for (let i = 1; i < 42; i++) {
     days.push(new Date(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
@@ -36,14 +36,15 @@ export default function TradingCalendar() {
   };
 
   const getTradeDataForDate = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0];
-    const dayTrades = trades.filter(trade => {
-      const tradeDate = trade.tradeDate;
-      return tradeDate === dateString;
-    });
-    const pnl = calculateTotalPnL(dayTrades);
-    return { count: dayTrades.length, pnl, trades: dayTrades };
-  };
+  const previousDate = new Date(date);
+  previousDate.setDate(previousDate.getDate() + 1); // Show trades from one day prior
+  const dateString = previousDate.toISOString().split('T')[0]; // <-- this is the string you want
+  const dayTrades = trades.filter(trade => trade.tradeDate === dateString);
+  const pnl = calculateTotalPnL(dayTrades);
+  return { count: dayTrades.length, pnl, trades: dayTrades };
+};
+
+
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -172,7 +173,7 @@ export default function TradingCalendar() {
       </CardHeader>
       <CardContent>
         <CalendarContent />
-      </CardContent>
+      </CardContent>s
     </Card>
   );
 }

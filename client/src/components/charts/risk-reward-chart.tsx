@@ -42,13 +42,13 @@ export default function RiskRewardChart({ trades, strategies = [] }: RiskRewardC
       const data = payload[0].payload;
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium mb-2">{data.stockName}</p>
+          <p className="font-medium mb-2 text-black">{data.stockName}</p>
           <div className="space-y-1">
-            <p className="text-sm">Date: {new Date(data.tradeDate).toLocaleDateString()}</p>
-            <p className="text-sm">Risk: ₹{data.risk.toFixed(2)}</p>
-            <p className="text-sm">Reward: ₹{data.reward.toFixed(2)}</p>
-            <p className="text-sm">R:R Ratio: {data.ratio.toFixed(2)}:1</p>
-            <p className="text-sm">
+            <p className="text-black">Date: {new Date(data.tradeDate).toLocaleDateString()}</p>
+            <p className="text-black">Risk: ₹{data.risk.toFixed(2)}</p>
+            <p className="text-black">Reward: ₹{data.reward.toFixed(2)}</p>
+            <p className="text-black">R:R Ratio: {data.ratio.toFixed(2)}:1</p>
+            <p className="text-black">
               P&L: <span className={data.pnl >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {formatCurrency(data.pnl)}
               </span>

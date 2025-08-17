@@ -114,7 +114,7 @@ export default function Strategies() {
     >
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Trading Strategies</h1>
+          <h1 className="text-2xl font-bold text-white-900">Trading Strategies</h1>
           <p className="text-gray-600">Manage and track your trading strategies</p>
         </div>
         
