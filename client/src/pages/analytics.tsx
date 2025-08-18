@@ -263,14 +263,12 @@ export default function Analytics() {
 
       {/* Enhanced Charts with Tabs */}
       <Tabs defaultValue="overview" className="mb-8">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="strategies">Strategies</TabsTrigger>
             <TabsTrigger value="psychology">Psychology</TabsTrigger>
             <TabsTrigger value="discipline">Discipline</TabsTrigger>
-          </TabsList>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-8">
