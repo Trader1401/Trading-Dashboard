@@ -162,7 +162,7 @@ export default function TradeChecklist({ checklist, onChecklistChange, disabled 
             </span>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {Object.values(checklist).filter(Boolean).length} / {Object.keys(checklist).length} items
+                {Object.values(checklist).filter(Boolean).length} / {checklistItems.length} items
               </span>
               <Badge variant={overallScore >= 75 ? 'default' : overallScore >= 50 ? 'secondary' : 'destructive'}>
                 {getAdherenceLevel(overallScore)}

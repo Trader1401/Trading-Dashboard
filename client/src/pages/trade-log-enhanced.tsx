@@ -69,7 +69,7 @@ export default function TradeLogEnhanced() {
   
   const { trades, addTrade, isAdding, isLoading } = useTrades();
   const { strategies } = useStrategies();
-  const { serializeTradeNotes, parseTradeNotes } = useChecklist();
+  const { serializeTradeNotes, parseTradeNotes, checklistItems } = useChecklist();
 
   const form = useForm<TradeForm>({
     resolver: zodResolver(tradeSchema),
@@ -195,7 +195,7 @@ export default function TradeLogEnhanced() {
       // Parse checklist data for export
       const parsedNotes = parseTradeNotes(trade.notes);
       const checklistScore = parsedNotes.checklist 
-        ? Object.values(parsedNotes.checklist).filter(Boolean).length + '/' + Object.keys(parsedNotes.checklist).length
+        ? Object.values(parsedNotes.checklist).filter(Boolean).length + '/' + checklistItems.length
         : 'N/A';
 
       return [
@@ -836,7 +836,7 @@ export default function TradeLogEnhanced() {
                                 {(() => {
                                   const parsed = parseTradeNotes(trade.notes);
                                   const checklistScore = parsed.checklist 
-                                    ? Object.values(parsed.checklist).filter(Boolean).length + '/' + Object.keys(parsed.checklist).length
+                                    ? Object.values(parsedNotes.checklist).filter(Boolean).length + '/' + checklistItems.length
                                     : null;
                                   
                                   return (

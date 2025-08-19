@@ -149,10 +149,9 @@ export function useChecklist() {
   };
 
   const calculateAdherenceScore = (checklist: ChecklistAdherence): number => {
-    const items = Object.values(checklist);
-    if (items.length === 0) return 0;
-    const followedItems = items.filter(Boolean).length;
-    return (followedItems / items.length) * 100;
+    if (checklistItems.length === 0) return 0;
+    const followedItems = Object.values(checklist).filter(Boolean).length;
+    return (followedItems / checklistItems.length) * 100;
   };
 
   const getAdherenceLevel = (score: number): string => {

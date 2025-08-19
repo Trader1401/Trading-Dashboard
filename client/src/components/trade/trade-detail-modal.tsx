@@ -66,7 +66,7 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
   const [userNotes, setUserNotes] = useState("");
   const { updateTrade, deleteTrade, isUpdating, isDeleting } = useTrades();
   const { strategies } = useStrategies();
-  const { parseTradeNotes, serializeTradeNotes, calculateAdherenceScore, getAdherenceLevel } = useChecklist();
+  const { parseTradeNotes, serializeTradeNotes, calculateAdherenceScore, getAdherenceLevel, checklistItems } = useChecklist();
 
   const form = useForm<TradeForm>({
     resolver: zodResolver(tradeSchema),
@@ -571,7 +571,7 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Checklist Adherence</span>
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-900 dark:text-gray-100">
-                            {Object.values(parsedNotes.checklist).filter(Boolean).length}/{Object.keys(parsedNotes.checklist).length}
+                            {Object.values(parsedNotes.checklist).filter(Boolean).length}/{checklistItems.length}
                           </span>
                           <Badge variant={adherenceScore >= 75 ? 'default' : adherenceScore >= 50 ? 'secondary' : 'destructive'}>
                             {adherenceLevel}
